@@ -53,6 +53,7 @@ test('stale room cache is cleared after an in-memory room is gone', async ({ pag
 
 test('a valid in-memory room still reconnects after reload', async ({ page }) => {
   await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 60_000 });
+  await expect(page.locator('.service-state.online, .gongzhu-online-state.online, .status-line').first()).toContainText(/已连接/, { timeout: 20_000 });
   await page.getByRole('button', { name: '创建房间' }).click();
   await page.getByRole('button', { name: '确认创建' }).click();
   await expect(page.locator('.room-panel .room-title-line strong')).toHaveText(/房间号 \d{4}/);
