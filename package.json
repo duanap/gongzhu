@@ -1,7 +1,7 @@
 {
-  "name": "hearts-by-duanap",
-  "version": "1.4.22",
-  "description": "红心大战联机版：4位易记房间号、离线提示、房间超时自动解散",
+  "name": "gongzhu-by-duanap",
+  "version": "0.1.0",
+  "description": "拱猪联机版：gongzhu-v1 规则、秘密亮牌、AI 补位与断线重连",
   "main": "server.js",
   "engines": {
     "node": ">=22.13.0"
@@ -9,32 +9,19 @@
   "scripts": {
     "dev:client": "vite --host 127.0.0.1",
     "build:client": "vite build",
-    "check:css": "node scripts/check-css-architecture.js",
     "preview:client": "vite preview --host 127.0.0.1",
     "start": "node server.js",
-    "check:vue-cutover": "node scripts/vue-cutover-check.js",
     "test:e2e": "playwright test",
-    "test:e2e:orientation": "playwright test tests/e2e/physical-landscape.spec.js tests/e2e/css-landscape-fallback.spec.js",
-    "test:e2e:stages": "playwright test tests/e2e/physical-game-stages.spec.js",
-    "test:e2e:smoke": "playwright test tests/e2e/browser-smoke.spec.js",
-    "test:e2e:round": "playwright test tests/e2e/full-round.spec.js",
-    "test:e2e:reconnect": "playwright test tests/e2e/reconnect-takeover.spec.js",
-    "test:e2e:illegal": "playwright test tests/e2e/illegal-play.spec.js",
-    "test:e2e:sweep-moon": "playwright test tests/e2e/sweep-moon.spec.js",
-    "test:e2e:room-lifecycle": "playwright test tests/e2e/room-lifecycle.spec.js",
-    "docs:dev": "docmd dev",
-    "docs:build": "docmd build",
-    "docs:check": "docmd build && docmd validate",
-    "test": "node --test src/server/*.test.js src/client/src/**/*.test.mjs",
+    "test:e2e:smoke": "playwright test tests/e2e/gongzhu-smoke.spec.js",
+    "test": "node --test src/server/games/gongzhu/*.test.js",
     "start:prod": "pm2 start ecosystem.config.js",
-    "reload:prod": "pm2 restart hearts --update-env"
+    "reload:prod": "pm2 restart gongzhu --update-env"
   },
   "dependencies": {
     "vue": "^3.5.39",
     "ws": "^8.18.0"
   },
   "devDependencies": {
-    "@docmd/core": "0.8.17",
     "@playwright/test": "^1.61.1",
     "@vitejs/plugin-vue": "^6.0.7",
     "vite": "^8.1.2"

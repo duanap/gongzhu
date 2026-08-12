@@ -34,7 +34,6 @@ export function createGameSocket(state) {
     socket.send(JSON.stringify({
       ...data,
       clientId: state.clientId,
-      guestId: state.guestId,
       reconnectToken: state.reconnectToken || '',
       nickname: state.nickname
     }));
@@ -145,21 +144,9 @@ export function createGameSocket(state) {
     startGame: () => send({ type: 'startGame' }),
     fillBotsAndStart: () => send({ type: 'fillBotsAndStart' }),
     leaveRoom: () => send({ type: 'leaveRoom' }),
-    disbandRoom: () => send({ type: 'disbandRoom' }),
-    passCards: cards => send({ type: 'passCards', cards }),
+    declareCards: cardIds => send({ type: 'declareCards', cardIds }),
     playCard: cardId => send({ type: 'playCard', cardId }),
-    sweepCards: () => send({ type: 'sweepCards' }),
     startNextRound: () => send({ type: 'startNextRound' }),
-    restartGame: () => send({ type: 'restartGame' }),
-    takeoverOffline: () => send({ type: 'takeoverOffline' }),
-    approveBotTakeover: (requestId, approved = true) => send({
-      type: 'approveBotTakeover',
-      requestId,
-      approved
-    }),
-    sendInteraction: interaction => send({
-      type: 'interaction',
-      interaction
-    })
+    restartGame: () => send({ type: 'restartGame' })
   };
 }
