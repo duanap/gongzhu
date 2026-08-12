@@ -1,0 +1,97 @@
+.legacy-hand.desktop-hand {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  z-index: 12;
+  width: min(860px, calc(100% - 320px));
+  max-height: 178px;
+  overflow: visible;
+  transform: translateX(-50%);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  --card-width: 78px;
+  --card-height: 112px;
+}
+
+.legacy-hand.desktop-hand header {
+  position: absolute;
+  left: 50%;
+  bottom: 130px;
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  width: 260px;
+  transform: translateX(-50%);
+}
+
+.legacy-hand.desktop-hand header strong {
+  display: none;
+}
+
+.legacy-hand.desktop-hand header span {
+  max-width: 260px;
+  color: rgba(255, 255, 255, .72);
+  text-align: center;
+}
+
+.legacy-hand.desktop-hand header .primary-button {
+  margin-top: 8px;
+  border-radius: 999px;
+}
+
+.legacy-hand .card-row {
+  justify-content: center;
+  align-items: end;
+  min-height: 170px;
+  overflow: visible;
+  padding: 0 0 10px;
+  gap: 0;
+}
+
+.legacy-hand .card-row .game-card {
+  --fan-angle: 0deg;
+  --fan-rise: 0px;
+  margin-left: -22px;
+  transform: translateY(var(--fan-rise)) rotate(var(--fan-angle));
+  transform-origin: 50% 115%;
+  transition: transform .14s ease, outline-color .14s ease;
+}
+
+.legacy-hand .card-row .game-card:first-child {
+  margin-left: 0;
+}
+
+.legacy-hand .card-row .game-card:nth-child(1) { --fan-angle: -13deg; --fan-rise: 0px; }
+.legacy-hand .card-row .game-card:nth-child(2) { --fan-angle: -10deg; --fan-rise: -6px; }
+.legacy-hand .card-row .game-card:nth-child(3) { --fan-angle: -7deg; --fan-rise: -10px; }
+.legacy-hand .card-row .game-card:nth-child(4) { --fan-angle: -5deg; --fan-rise: -14px; }
+.legacy-hand .card-row .game-card:nth-child(5) { --fan-angle: -3deg; --fan-rise: -17px; }
+.legacy-hand .card-row .game-card:nth-child(6) { --fan-angle: -1deg; --fan-rise: -19px; }
+.legacy-hand .card-row .game-card:nth-child(7) { --fan-angle: 0deg; --fan-rise: -20px; }
+.legacy-hand .card-row .game-card:nth-child(8) { --fan-angle: 1deg; --fan-rise: -19px; }
+.legacy-hand .card-row .game-card:nth-child(9) { --fan-angle: 3deg; --fan-rise: -17px; }
+.legacy-hand .card-row .game-card:nth-child(10) { --fan-angle: 5deg; --fan-rise: -14px; }
+.legacy-hand .card-row .game-card:nth-child(11) { --fan-angle: 7deg; --fan-rise: -10px; }
+.legacy-hand .card-row .game-card:nth-child(12) { --fan-angle: 10deg; --fan-rise: -6px; }
+.legacy-hand .card-row .game-card:nth-child(13) { --fan-angle: 13deg; --fan-rise: 0px; }
+
+.legacy-hand .card-row .game-card.selected {
+  transform: translateY(calc(var(--fan-rise) - 18px)) rotate(var(--fan-angle));
+}
+
+.legacy-game-stage .table-status-panel.your-turn strong::after,
+.mobile-game-stage .table-status-panel.your-turn strong::after {
+  content: none;
+}
+
+.legacy-result.desktop-result {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  width: auto;
+  max-height: none;
+  transform: none;
+}

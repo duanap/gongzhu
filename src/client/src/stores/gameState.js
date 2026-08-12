@@ -15,6 +15,19 @@ function randomId() {
   return `client-${crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`}`;
 }
 
+function rotatePlayers(players, yourIndex) {
+  if (!players.length) return [];
+  return Array.from({ length: 4 }, (_, viewIndex) => {
+    const serverIndex = (yourIndex + viewIndex) % 4;
+    return { ...(players[serverIndex] || {}), serverIndex, viewIndex };
+  });
+}
+
+function toViewIndex(serverIndex, yourIndex) {
+  if (!Number.isInteger(serverIndex)) return -1;
+  return (serverIndex - yourIndex + 4) % 4;
+}
+
 export function createGameState() {
   const clientId = stored('clientId') || randomId();
   localStorage.setItem(KEYS.clientId, clientId);
@@ -50,6 +63,9 @@ export function createGameState() {
     winnerIndexes: [],
     pigIndexes: [],
     lastTrick: null,
+    viewPlayers: [],
+    currentViewPlayer: -1,
+    trickView: [],
     log: []
   });
 }
@@ -60,13 +76,19 @@ export function setNickname(state, nickname) {
 }
 
 export function applyServerState(state, message) {
+  const players = Array.isArray(message.players) ? message.players : [];
+  const yourIndex = Number(message.yourIndex || 0);
+  const viewPlayers = rotatePlayers(players, yourIndex);
   Object.assign(state, message, {
     connected: true,
     connecting: false,
     reconnecting: false,
     lastError: '',
-    players: Array.isArray(message.players) ? message.players : [],
-    hand: message.players?.[message.yourIndex]?.hand || [],
+    players,
+    viewPlayers,
+    currentViewPlayer: toViewIndex(message.currentPlayer, yourIndex),
+    trickView: (message.trick || []).map(play => ({ ...play, player: toViewIndex(play.player, yourIndex) })),
+    hand: players[yourIndex]?.hand || [],
     legalCardIds: Array.isArray(message.legalCardIds) ? message.legalCardIds : [],
     declarations: Array.isArray(message.declarations) ? message.declarations : [],
     declarationSubmitted: Array.isArray(message.declarationSubmitted) ? message.declarationSubmitted : [],

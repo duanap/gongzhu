@@ -14,4 +14,5 @@
 - `src/server/games/gongzhu/rules.js` 是纯规则和计分边界。
 - `src/server/games/gongzhu/engine.js` 是牌局状态机边界。
 - `server.js` 只负责房间、连接、广播、计时和 AI 调度。
-- 客户端只渲染服务端公开状态，不自行裁定合法牌或分数。
+- 客户端沿用 Hearts 的桌面/手机牌桌布局与基础组件，通过 `stores/gameState.js` 把服务端座位旋转成“你、左家、上家、右家”的视角。
+- 客户端只渲染服务端公开状态，不自行裁定合法牌或分数；亮牌、手牌和结算是拱猪专属组件。

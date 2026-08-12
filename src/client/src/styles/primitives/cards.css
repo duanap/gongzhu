@@ -1,0 +1,231 @@
+.game-card {
+  position: relative;
+  width: var(--card-width);
+  height: var(--card-height);
+  flex: 0 0 auto;
+  border: 1px solid rgba(0, 0, 0, .18);
+  border-radius: 7px;
+  color: #111;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, .98), rgba(237, 241, 245, .98));
+  box-shadow: 0 12px 20px rgba(0, 0, 0, .28), inset 0 1px 0 rgba(255, 255, 255, .95);
+  cursor: pointer;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 900;
+  line-height: 1;
+  transform-origin: bottom center;
+  transition: transform .15s ease, filter .15s ease, box-shadow .15s ease;
+}
+
+.game-card.red {
+  color: #d7354b;
+}
+
+.game-card.black {
+  color: #111;
+}
+
+.game-card.queen-spades {
+  box-shadow: 0 0 0 2px rgba(55, 42, 31, .32), 0 14px 24px rgba(0, 0, 0, .30), inset 0 1px 0 rgba(255, 255, 255, .95);
+}
+
+.game-card.heart-card {
+  box-shadow: 0 0 0 2px rgba(216, 77, 93, .18), 0 14px 24px rgba(0, 0, 0, .28), inset 0 1px 0 rgba(255, 255, 255, .95);
+}
+
+.game-card.compact {
+  width: 58px;
+  height: 82px;
+  cursor: default;
+}
+
+.game-card.playable {
+  outline: 2px solid rgba(115, 226, 176, .85);
+}
+
+.game-card.selected {
+  transform: translateY(-10px);
+  outline: 2px solid rgba(245, 214, 118, .95);
+}
+
+.card-corner {
+  position: absolute;
+  left: 7px;
+  top: 7px;
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  gap: 1px;
+  font-size: calc(var(--card-width) * .28);
+  line-height: .9;
+  text-align: center;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .74);
+}
+
+.card-corner.bottom {
+  left: auto;
+  right: 7px;
+  top: auto;
+  bottom: 7px;
+  transform: rotate(180deg);
+}
+
+.card-corner strong {
+  font: inherit;
+  color: inherit;
+  line-height: .9;
+}
+
+.card-corner small {
+  font: inherit;
+  font-size: .9em;
+  line-height: .9;
+}
+
+.card-pip {
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  transform: translate(-50%, -50%);
+  font-size: calc(var(--card-width) * .72);
+  line-height: 1;
+  opacity: .96;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .78);
+}
+
+.game-card.compact .card-corner {
+  left: 6px;
+  top: 6px;
+  font-size: 14px;
+}
+
+.game-card.compact .card-corner.bottom {
+  left: auto;
+  right: 6px;
+  top: auto;
+  bottom: 6px;
+}
+
+.game-card.compact .card-pip {
+  font-size: 34px;
+}
+
+.table-status-panel.your-turn {
+  outline: 2px solid rgba(115, 226, 176, .85);
+  box-shadow: 0 0 0 6px rgba(115, 226, 176, .12);
+}
+
+.table-status-panel.your-turn strong::after {
+  content: " · 轮到你";
+  color: #73e2b0;
+}
+
+.hand-hint {
+  margin: 0;
+  color: #ffdf8a;
+}
+
+.score-list,
+.log-list,
+.event-list,
+.result-list {
+  display: grid;
+  gap: 6px;
+}
+
+.score-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .06);
+}
+
+.score-row.active {
+  background: rgba(245, 214, 118, .14);
+}
+
+.score-row span,
+.score-row small,
+.log-list p {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.score-row small,
+.log-list p {
+  color: rgba(255, 255, 255, .66);
+  font-size: 12px;
+}
+
+.log-list p {
+  margin: 0;
+}
+
+.log-list p span {
+  color: rgba(245, 214, 118, .85);
+  font-weight: 800;
+}
+
+.event-card {
+  display: grid;
+  gap: 3px;
+  padding: 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .06);
+}
+
+.event-card.important {
+  outline: 1px solid rgba(245, 214, 118, .45);
+}
+
+.event-card.epic,
+.event-card.legendary {
+  background: rgba(245, 214, 118, .14);
+}
+
+.event-card span {
+  min-width: 0;
+  overflow: hidden;
+  color: rgba(255, 255, 255, .7);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.result-row {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto auto;
+  gap: 10px 12px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 244, 194, .13);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .06);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08);
+}
+
+.result-row.winner {
+  border-color: rgba(255, 226, 118, .48);
+  outline: 1px solid rgba(245, 214, 118, .42);
+  background: linear-gradient(145deg, rgba(255, 222, 103, .25), rgba(77, 146, 59, .28));
+}
+
+.result-row.active {
+  background: rgba(245, 214, 118, .14);
+}
+
+.result-rank-medal {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  color: #fff3be;
+  background: rgba(255, 244, 194, .12);
+  font-size: 17px;
+  font-weight: 950;
+}

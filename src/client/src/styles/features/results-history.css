@@ -1,0 +1,463 @@
+.result-player-main {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.result-player-name,
+.result-player-sub {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.result-player-name {
+  color: var(--color-ink-on-table);
+  font-weight: 950;
+}
+
+.result-player-sub {
+  color: rgba(255, 255, 255, .66);
+  font-size: 12px;
+}
+
+.result-score-group {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.result-score-pill {
+  display: grid;
+  justify-items: center;
+  min-width: 68px;
+  gap: 2px;
+  padding: 6px 10px;
+  border-radius: 14px;
+  background: rgba(255, 244, 194, .08);
+}
+
+.result-score-pill span {
+  color: rgba(255, 249, 224, .62);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.result-score-pill strong {
+  color: #ffe68f;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.result-score-pill.total strong {
+  font-size: 25px;
+}
+
+.result-badge-wrap {
+  min-width: 66px;
+  text-align: right;
+}
+
+.result-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 9px;
+  border-radius: 999px;
+  color: #214422;
+  background: rgba(255, 232, 137, .92);
+  font-size: 12px;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
+.result-keep-going {
+  color: rgba(255, 249, 224, .58);
+  font-size: 12px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.round-detail-panel {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  min-width: 0;
+}
+
+.detail-section {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--border-color-soft);
+  border-radius: 8px;
+  background: rgba(8, 24, 14, .66);
+  backdrop-filter: blur(12px);
+}
+
+.detail-section header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.detail-section strong {
+  color: var(--color-accent-gold);
+}
+
+.detail-section header span {
+  min-width: 0;
+  overflow: hidden;
+  color: rgba(255, 255, 255, .68);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mini-card-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+}
+
+.last-trick-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.trick-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.trick-meta-grid span {
+  min-width: 0;
+  overflow: hidden;
+  padding: 6px 7px;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, .68);
+  background: rgba(255, 255, 255, .06);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.last-trick-item {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .06);
+}
+
+.last-trick-item.winner {
+  outline: 1px solid rgba(245, 214, 118, .75);
+}
+
+.last-trick-item span {
+  max-width: 100%;
+  overflow: hidden;
+  color: rgba(255, 255, 255, .68);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.round-summary-list {
+  display: grid;
+  gap: 6px;
+}
+
+.round-summary-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .06);
+}
+
+.round-summary-row.active {
+  background: rgba(245, 214, 118, .14);
+}
+
+.round-summary-row span,
+.round-summary-row small {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.round-summary-row small {
+  color: rgba(255, 255, 255, .66);
+  font-size: 12px;
+}
+
+.round-table-review {
+  grid-column: 1 / -1;
+}
+
+.round-review-heading {
+  align-items: flex-start !important;
+  padding-right: 34px;
+}
+
+.round-review-heading > div:first-child {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.round-review-heading > div:first-child small {
+  color: rgba(255, 226, 137, .72);
+  font-size: 9px;
+  font-weight: 950;
+  letter-spacing: .12em;
+}
+
+.round-review-legend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  padding-top: 7px;
+  color: rgba(255, 248, 221, .72);
+  font-size: 11px;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.round-legend-swatch {
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(255, 255, 255, .28);
+  border-radius: 3px;
+}
+
+.round-legend-swatch.received {
+  border-color: var(--color-highlight);
+  background: rgba(255, 215, 94, .18);
+}
+
+.round-legend-swatch.passed {
+  border-color: #77b7ff;
+  background: rgba(79, 153, 236, .18);
+}
+
+.round-detail-panel.round-table-only {
+  grid-template-columns: 1fr;
+}
+
+.round-table-only .round-player-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.round-player-grid {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.round-player-panel {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid rgba(255, 244, 194, .12);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .055);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08);
+}
+
+.round-player-panel.is-you {
+  border-color: rgba(255, 226, 118, .42);
+  background: linear-gradient(145deg, rgba(255, 222, 103, .16), rgba(77, 146, 59, .18));
+}
+
+.round-player-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+}
+
+.round-player-identity {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+
+.round-player-avatar {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  color: #17371d;
+  background: linear-gradient(145deg, #fff3bd, #d9a943);
+  font-weight: 950;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .50);
+}
+
+.round-player-name,
+.round-player-meta {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.round-player-name {
+  color: var(--color-ink-on-table);
+  font-weight: 950;
+}
+
+.round-player-meta {
+  margin-top: 2px;
+  color: rgba(255, 249, 224, .58);
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.round-score-pair {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 6px;
+}
+
+.round-score-pair span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 28px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  color: rgba(255, 249, 224, .66);
+  background: rgba(255, 244, 194, .08);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.round-score-pair b {
+  color: #ffe68f;
+  font-size: 15px;
+}
+
+.round-hand-block {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.round-block-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: rgba(255, 230, 143, .84);
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.round-block-label small,
+.round-pass-direction span {
+  color: rgba(255, 249, 224, .52);
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.round-card-strip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.round-card-strip .game-card.compact {
+  width: 34px;
+  height: 48px;
+  flex: 0 0 auto;
+}
+
+.round-table-only .round-card-strip {
+  display: grid;
+  grid-template-columns: repeat(13, minmax(20px, 1fr));
+  gap: 3px;
+  overflow: visible;
+}
+
+.round-table-only .round-card-strip .game-card.compact {
+  width: 100%;
+  min-width: 0;
+  height: 44px;
+  padding: 3px 1px;
+  border-radius: 5px;
+}
+
+.round-table-only .round-hand-block .game-card.just-received {
+  animation: none;
+  outline: 2px solid var(--color-highlight);
+  box-shadow: inset 0 0 0 1px rgba(70, 45, 0, .18);
+}
+
+.round-table-only .round-card-strip.pass-cards {
+  grid-template-columns: repeat(3, minmax(28px, 38px));
+  justify-content: end;
+}
+
+.round-table-only .round-card-strip.pass-cards .game-card.passed-card {
+  width: 100%;
+  height: 38px;
+  border-color: #77b7ff;
+  outline: 1px solid rgba(119, 183, 255, .72);
+}
+
+.round-pass-block {
+  display: grid;
+  grid-template-columns: minmax(90px, .8fr) minmax(120px, 1.2fr);
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 8px;
+  border-radius: 10px;
+  background: rgba(255, 244, 194, .055);
+}
+
+.round-pass-direction {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.round-pass-direction strong {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--color-ink-on-table);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.round-card-strip.pass-cards .game-card.compact {
+  width: 30px;
+  height: 42px;
+}
+
+.round-pass-muted {
+  color: rgba(255, 249, 224, .48);
+  font-size: 12px;
+  font-weight: 850;
+}
