@@ -1,81 +1,25 @@
-:root { color-scheme: dark; font-family: Inter, "PingFang SC", "Microsoft YaHei", sans-serif; color: #f9f6e8; background: #071b16; font-synthesis: none; }
-* { box-sizing: border-box; }
-body { margin: 0; min-width: 320px; min-height: 100vh; background: radial-gradient(circle at 50% -10%, #28634b 0, #0d3529 38%, #061b15 100%); }
-button, input { font: inherit; }
-button { cursor: pointer; }
-button:disabled { cursor: not-allowed; }
-.app-shell { width: min(1120px, 100%); min-height: 100vh; margin: auto; padding: 28px clamp(16px, 4vw, 48px) 48px; }
-.brand-bar { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #ffffff1a; padding-bottom: 18px; }
-.eyebrow { color: #e4bd66; font-size: 11px; letter-spacing: .26em; }
-h1 { margin: 2px 0 -2px; font-family: Georgia, serif; font-size: clamp(38px, 7vw, 62px); line-height: 1; letter-spacing: .14em; }
-.brand-bar p { margin: 8px 0 0; color: #aabdb4; }
-.connection { border: 1px solid #ffffff22; border-radius: 99px; padding: 8px 12px; color: #9baea5; font-size: 13px; }
-.connection.online { color: #80e0aa; border-color: #49a97566; }
-.entry-card, .stage-card { margin: clamp(32px, 8vh, 84px) auto 0; max-width: 620px; padding: clamp(24px, 5vw, 44px); background: #0a2b21e8; border: 1px solid #d7b96942; border-radius: 24px; box-shadow: 0 24px 80px #0007; }
-.hero-mark { color: #efe8d0; font-size: 48px; letter-spacing: .12em; }
-.hero-mark span { color: #df5b5b; }
-h2 { margin: 10px 0; font-family: Georgia, "Songti SC", serif; font-size: 30px; }
-p { color: #b8c8c0; line-height: 1.65; }
-label { display: grid; gap: 8px; color: #d9e2dd; font-size: 13px; }
-input { min-width: 0; border: 1px solid #ffffff24; border-radius: 12px; padding: 13px 14px; color: #fff; background: #03140f99; outline: none; }
-input:focus { border-color: #d9b75f; box-shadow: 0 0 0 3px #d9b75f20; }
-.entry-actions { display: grid; gap: 12px; margin-top: 20px; }
-.join-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; }
-.primary, .ghost, .join-row button { border: 0; border-radius: 12px; padding: 12px 18px; color: #122218; background: linear-gradient(135deg, #f2d884, #b98c35); font-weight: 800; }
-.ghost, .join-row button { color: #f4eedb; background: #ffffff13; border: 1px solid #ffffff20; }
-.wide { width: 100%; margin-top: 22px; }
-.primary:disabled { opacity: .52; }
-.room-strip { display: flex; gap: 18px; align-items: center; margin: 20px 0; padding: 12px 16px; background: #061d17cc; border: 1px solid #ffffff14; border-radius: 16px; }
-.room-strip div { display: grid; }
-.room-strip small, .score-grid small, .stage-title small, .table-message small { color: #89a197; }
-.room-strip button:first-of-type { margin-left: auto; }
-.score-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-.score-grid article { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; padding: 14px; background: #08271eaa; border: 1px solid #ffffff14; border-radius: 15px; }
-.score-grid article.active { border-color: #d7b55d; box-shadow: 0 0 0 2px #d7b55d1f; }
-.score-grid article.self { background: #124433aa; }
-.score-grid article div { display: grid; }
-.score-grid article b { font-size: 24px; }
-.score-grid article > span { grid-column: 1 / -1; color: #98aca3; font-size: 12px; }
-.stage-card { margin-top: 22px; max-width: none; }
-.waiting { text-align: center; }
-.stage-title { display: flex; justify-content: space-between; align-items: start; }
-.stage-title b { color: #f1d36e; font-size: 30px; }
-.stage-title b.urgent { color: #ff6d62; }
-.declaration-status, .declarations { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0; }
-.declaration-status span, .declarations span { padding: 6px 10px; border-radius: 99px; background: #ffffff0d; color: #91a59b; font-size: 12px; }
-.declaration-status span.done, .declarations span { background: #d8b75c20; color: #efd786; }
-.declarable-list, .hand-cards { display: flex; flex-wrap: wrap; gap: 9px; }
-.playing-card { position: relative; width: 70px; aspect-ratio: .7; border: 2px solid #d6d0bc; border-radius: 9px; color: #171713; background: linear-gradient(145deg, #fffef9, #ded9c7); box-shadow: 0 8px 14px #0005; text-align: left; padding: 7px; }
-.playing-card.H, .playing-card.D { color: #c73333; }
-.playing-card em { position: absolute; right: 6px; bottom: 5px; font-style: normal; font-weight: 900; color: #af2a2a; }
-.playing-card.selected { translate: 0 -8px; border-color: #f4d466; box-shadow: 0 0 0 3px #f4d46655, 0 14px 25px #0008; }
-.playing-card:disabled { opacity: .5; }
-.playing-card.legal { opacity: 1; translate: 0 -4px; }
-.empty-choice { color: #82978d; padding: 20px; }
-.table-stage { position: relative; min-height: 340px; margin-top: 20px; border-radius: 48% / 20%; border: 1px solid #d8bb6955; background: radial-gradient(ellipse, #287154, #0d402f 65%, #08251c); box-shadow: inset 0 0 60px #001b12, 0 20px 40px #0004; }
-.table-message { position: absolute; inset: 50% auto auto 50%; translate: -50% -50%; display: grid; text-align: center; }
-.declarations { position: absolute; left: 20px; top: 12px; margin: 0; }
-.trick-zone { position: absolute; inset: 25% 20%; display: grid; place-items: center; color: #81a395; }
-.trick-play { position: absolute; display: grid; gap: 4px; justify-items: center; }
-.trick-play.seat-0 { bottom: 0; } .trick-play.seat-1 { left: 0; } .trick-play.seat-2 { top: 0; } .trick-play.seat-3 { right: 0; }
-.trick-play .playing-card { width: 58px; }
-.hand-panel { position: sticky; bottom: 10px; margin-top: 18px; padding: 14px; background: #03150fef; border: 1px solid #ffffff1c; border-radius: 18px; backdrop-filter: blur(14px); }
-.hand-title { display: flex; justify-content: space-between; margin-bottom: 12px; }
-.hand-cards { flex-wrap: nowrap; overflow-x: auto; min-height: 110px; padding: 8px 4px 14px; }
-.results article { display: grid; grid-template-columns: 1fr auto 70px; gap: 14px; align-items: center; padding: 13px 0; border-bottom: 1px solid #ffffff10; }
-.results article div { display: grid; }
-.results article small { color: #96a99f; }
-.results article b { text-align: right; font-size: 23px; color: #f0d47b; }
-.toast { position: fixed; left: 50%; bottom: 22px; translate: -50%; max-width: min(90vw, 520px); padding: 12px 18px; border: 1px solid #d86e64; border-radius: 12px; background: #3b1715ee; box-shadow: 0 10px 40px #0009; }
-@media (max-width: 720px) {
-  .app-shell { padding: 16px 12px 34px; }
-  .brand-bar h1 { font-size: 38px; }
-  .score-grid { grid-template-columns: repeat(2, 1fr); }
-  .room-strip { flex-wrap: wrap; gap: 10px 18px; }
-  .room-strip button:first-of-type { margin-left: 0; }
-  .playing-card { width: 58px; }
-  .table-stage { min-height: 280px; border-radius: 32px; }
-  .results article { grid-template-columns: 1fr auto; }
-  .results article b { grid-column: 2; grid-row: 1 / span 2; }
-}
-@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; } }
+/*
+ * Vue CSS entry point.
+ *
+ * Keep imports explicit and ordered: the current UI still relies on source-order
+ * parity while legacy selectors are moved into focused modules.
+ */
+@import './tokens.css';
+@import './foundation/base.css';
+@import './primitives/table-elements.css';
+@import './features/interactions.css';
+@import './features/trick-events.css';
+@import './motion/table-effects.css';
+@import './motion/canonical-keyframes.css';
+@import './layout/desktop-table.css';
+@import './features/hand.css';
+@import './primitives/modals-tools.css';
+@import './features/seats.css';
+@import './primitives/cards.css';
+@import './features/results-history.css';
+@import './layout/mobile-fallback.css';
+@import './layout/responsive.css';
+@import './compat/desktop-parity.css';
+@import './layout/mobile-table.css';
+@import './compat/mobile-parity.css';
+@import './gongzhu.css';

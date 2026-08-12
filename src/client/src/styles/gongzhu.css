@@ -1,0 +1,109 @@
+.app-shell {
+  --gongzhu-felt: radial-gradient(circle at 50% 43%, #65aa54 0, #418740 43%, #235b31 100%);
+}
+
+body,
+body.theme-night,
+body.theme-classic {
+  background: radial-gradient(circle at 50% 0, #315f38, #122414 62%, #0b1b11);
+}
+
+.legacy-game-stage.desktop-game-stage,
+.mobile-game-stage {
+  background: var(--gongzhu-felt);
+}
+
+.gongzhu-online-state {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 5px 11px;
+  border: 1px solid rgba(255, 255, 255, .3);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, .72);
+  background: rgba(11, 45, 22, .42);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.gongzhu-online-state.online { color: #d9ffdc; border-color: rgba(147, 238, 159, .55); }
+.gongzhu-hand-card { position: relative; flex: 0 0 auto; }
+.gongzhu-special-badge {
+  position: absolute;
+  right: -4px;
+  top: -10px;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  border: 2px solid rgba(255, 255, 255, .8);
+  border-radius: 50%;
+  color: #fff;
+  background: #a6312d;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, .28);
+  font-size: 12px;
+}
+.gongzhu-hand-card.declared .gongzhu-special-badge { background: #bf8a15; transform: translateY(-4px); }
+.gongzhu-declaration-chips { position: relative; z-index: 2; display: flex; justify-content: center; flex-wrap: wrap; gap: 5px; max-width: 240px; }
+.gongzhu-declaration-chips span { padding: 3px 7px; border-radius: 999px; color: #6d431f; background: rgba(255, 239, 174, .86); font-size: 10px; font-weight: 900; }
+.gongzhu-declare-panel {
+  position: absolute;
+  left: 24px;
+  top: 86px;
+  z-index: 16;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 18px;
+  min-width: 250px;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 237, 167, .42);
+  border-radius: 16px;
+  color: #fff;
+  background: rgba(18, 54, 29, .84);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .2);
+  backdrop-filter: blur(12px);
+}
+.gongzhu-declare-panel > div:first-child { display: grid; gap: 2px; }
+.gongzhu-declare-panel > div:first-child span { color: rgba(255, 255, 255, .64); font-size: 11px; }
+.gongzhu-declare-panel > b { color: #ffe073; font-size: 25px; }
+.gongzhu-declare-panel > b.urgent { color: #ff897c; }
+.gongzhu-declare-status { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 5px; }
+.gongzhu-declare-status span { padding: 3px 7px; border-radius: 999px; color: rgba(255, 255, 255, .62); background: rgba(255, 255, 255, .08); font-size: 10px; }
+.gongzhu-declare-status span.done { color: #f9dc7e; background: rgba(245, 214, 118, .16); }
+.gongzhu-round-panel {
+  position: absolute;
+  left: 24px;
+  top: 86px;
+  z-index: 16;
+  width: min(340px, calc(100vw - 48px));
+  padding: 14px;
+  border: 1px solid rgba(255, 237, 167, .42);
+  border-radius: 16px;
+  color: #fff;
+  background: rgba(18, 54, 29, .88);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .2);
+  backdrop-filter: blur(12px);
+}
+.gongzhu-round-panel > header div { display: grid; gap: 2px; }
+.gongzhu-round-panel > header span { color: rgba(255, 255, 255, .62); font-size: 11px; }
+.gongzhu-round-list { display: grid; gap: 5px; margin-top: 10px; }
+.gongzhu-round-list article { display: grid; grid-template-columns: 1fr auto 45px; gap: 9px; align-items: center; padding: 7px 9px; border-radius: 10px; background: rgba(255, 255, 255, .07); }
+.gongzhu-round-list article.self { background: rgba(245, 214, 118, .16); }
+.gongzhu-round-list article div { display: grid; min-width: 0; }
+.gongzhu-round-list article small { overflow: hidden; color: rgba(255, 255, 255, .6); font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.gongzhu-round-list article > span { font-weight: 900; }
+.gongzhu-round-list article > b { color: #ffe073; font-size: 18px; text-align: right; }
+.hand-phase-declare .game-card.unplayable { filter: saturate(.45) brightness(.76); }
+.hand-phase-declare .gongzhu-hand-card.special .game-card.playable { box-shadow: 0 0 0 3px rgba(245, 214, 118, .56), 0 12px 24px rgba(0, 0, 0, .3); }
+.room-panel .room-field { display: grid; gap: 7px; }
+.room-panel .room-field input { width: 100%; }
+
+@media (max-width: 768px), (pointer: coarse) and (hover: none) {
+  .gongzhu-declare-panel { left: 12px; top: 58px; min-width: 205px; padding: 8px 10px; transform: scale(.88); transform-origin: left top; }
+  .gongzhu-round-panel { left: 10px; top: 54px; width: 278px; padding: 9px; transform: scale(.78); transform-origin: left top; }
+  .gongzhu-declare-panel > b { font-size: 20px; }
+  .mobile-shell .gongzhu-special-badge { width: 20px; height: 20px; right: -2px; top: -8px; font-size: 10px; }
+  .mobile-shell .gongzhu-declaration-chips { max-width: 178px; gap: 3px; }
+  .mobile-shell .gongzhu-declaration-chips span { padding: 2px 5px; font-size: 8px; }
+}
