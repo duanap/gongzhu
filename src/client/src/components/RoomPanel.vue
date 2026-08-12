@@ -10,8 +10,13 @@ const localMessage = ref('');
 const modeToUse = computed(() => props.game.roomId ? 'status' : panelMode.value);
 
 watch(() => props.game.roomId, value => {
-  roomId.value = value || roomId.value;
-  if (value) panelMode.value = 'status';
+  if (value) {
+    roomId.value = value;
+    panelMode.value = 'status';
+    return;
+  }
+  roomId.value = '';
+  panelMode.value = 'choice';
 });
 
 function commitName() { emit('update-nickname', nickname.value); }

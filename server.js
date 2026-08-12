@@ -279,9 +279,21 @@ function findSeat(room, clientId, reconnectToken) {
 function handle(ws, msg) {
   if (msg.type === 'hello') {
     ws.clientId = String(msg.clientId || '');
-    const room = rooms.get(String(msg.roomId || ''));
+    const requestedRoomId = String(msg.roomId || '').trim();
+    if (!requestedRoomId) return;
+    const room = rooms.get(requestedRoomId);
+    if (!room) {
+      send(ws, { type: 'roomClosed', roomId: requestedRoomId, message: '房间不存在或已失效，已清除本地房间状态。' });
+      return;
+    }
     const index = room ? findSeat(room, ws.clientId, String(msg.reconnectToken || '')) : -1;
-    if (index >= 0) { attach(ws, room, index); log(room, `${room.game.players[index].name} 已重连。`); broadcast(room); }
+    if (index < 0) {
+      send(ws, { type: 'roomClosed', roomId: requestedRoomId, message: '房间身份已失效，已清除本地房间状态。' });
+      return;
+    }
+    attach(ws, room, index);
+    log(room, `${room.game.players[index].name} 已重连。`);
+    broadcast(room);
     return;
   }
   if (msg.type === 'createRoom') {
