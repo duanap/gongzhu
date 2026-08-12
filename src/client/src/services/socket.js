@@ -79,7 +79,7 @@ export function createGameSocket(state) {
       return;
     }
     if (msg.type === 'error') {
-      if (state.roomId && /房间不存在|已超时解散|房间身份已失效/.test(String(msg.message || ''))) {
+      if (state.roomId && /房间不存在|已超时解散|房间身份已失效|请先创建或加入房间/.test(String(msg.message || ''))) {
         markRoomClosed(state, '本地房间已失效，已刷新房间缓存。');
         return;
       }

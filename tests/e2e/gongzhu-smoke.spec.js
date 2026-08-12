@@ -39,3 +39,26 @@ test('Hearts table structure is preserved after creating a room', async ({ page 
   await expect(page.locator('.hand-panel')).toBeVisible();
   await expect(page.locator('.legacy-game-stage, .mobile-game-stage')).toBeVisible();
 });
+
+test('stale room cache is cleared after an in-memory room is gone', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('gongzhu-by-duanap-room-id', '9999');
+    localStorage.setItem('gongzhu-by-duanap-reconnect-token', 'stale-token');
+  });
+  await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 60_000 });
+  await expect(page.getByRole('button', { name: '创建房间' })).toBeVisible({ timeout: 10_000 });
+  await expect(page.getByText('房间号 9999', { exact: true })).toHaveCount(0);
+  await expect(page.evaluate(() => localStorage.getItem('gongzhu-by-duanap-room-id'))).resolves.toBeNull();
+});
+
+test('a valid in-memory room still reconnects after reload', async ({ page }) => {
+  await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 60_000 });
+  await page.getByRole('button', { name: '创建房间' }).click();
+  await page.getByRole('button', { name: '确认创建' }).click();
+  await expect(page.locator('.room-panel .room-title-line strong')).toHaveText(/房间号 \d{4}/);
+  const roomId = await page.evaluate(() => localStorage.getItem('gongzhu-by-duanap-room-id'));
+  expect(roomId).toMatch(/^\d{4}$/);
+  await page.reload({ waitUntil: 'domcontentloaded', timeout: 60_000 });
+  await expect(page.locator('.room-panel .room-title-line strong')).toHaveText(`房间号 ${roomId}`);
+  await expect(page.getByRole('button', { name: 'AI补位开始' })).toBeVisible();
+});
