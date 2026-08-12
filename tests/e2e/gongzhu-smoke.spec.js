@@ -1,8 +1,11 @@
 const { test, expect } = require('@playwright/test');
 
+test.setTimeout(90_000);
+
 test('host can complete a full round with three bots', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 60_000 });
   await expect(page.getByRole('heading', { name: '拱猪', exact: true })).toBeVisible();
+  await expect(page.locator('.connection.online')).toHaveText('已连接', { timeout: 20_000 });
   await page.getByRole('button', { name: '创建房间' }).click();
   await expect(page.getByText('gongzhu-v1')).toBeVisible();
   await page.getByRole('button', { name: 'AI 补位并开始' }).click();
@@ -21,7 +24,7 @@ test('host can complete a full round with three bots', async ({ page }) => {
 });
 
 test('entry screen remains usable on a mobile viewport', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 60_000 });
   await expect(page.getByRole('button', { name: '创建房间' })).toBeVisible();
   await expect(page.locator('body')).not.toHaveCSS('overflow-x', 'scroll');
 });

@@ -144,6 +144,7 @@ export function createGameSocket(state) {
     startGame: () => send({ type: 'startGame' }),
     fillBotsAndStart: () => send({ type: 'fillBotsAndStart' }),
     leaveRoom: () => send({ type: 'leaveRoom' }),
+    disbandRoom: () => send({ type: 'disbandRoom' }),
     declareCards: cardIds => send({ type: 'declareCards', cardIds }),
     playCard: cardId => send({ type: 'playCard', cardId }),
     startNextRound: () => send({ type: 'startNextRound' }),

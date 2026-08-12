@@ -1,6 +1,6 @@
 {
   "name": "gongzhu-by-duanap",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "拱猪联机版：gongzhu-v1 规则、秘密亮牌、AI 补位与断线重连",
   "main": "server.js",
   "engines": {
@@ -13,7 +13,7 @@
     "start": "node server.js",
     "test:e2e": "playwright test",
     "test:e2e:smoke": "playwright test tests/e2e/gongzhu-smoke.spec.js",
-    "test": "node --test src/server/games/gongzhu/*.test.js",
+    "test": "node --test src/server/*.test.js src/server/games/gongzhu/*.test.js",
     "start:prod": "pm2 start ecosystem.config.js",
     "reload:prod": "pm2 restart gongzhu --update-env"
   },

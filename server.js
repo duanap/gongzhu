@@ -7,6 +7,7 @@ const crypto = require('crypto');
 const WebSocket = require('ws');
 const { createGame, dealRound, submitDeclaration, playCard } = require('./src/server/games/gongzhu/engine');
 const { legalCards } = require('./src/server/games/gongzhu/rules');
+const { roomExpiryReason } = require('./src/server/roomLifecycle');
 const { version: APP_VERSION } = require('./package.json');
 
 const PORT = Number(process.env.PORT || 3010);
@@ -16,6 +17,9 @@ const ALLOWED_HOSTS = String(process.env.ALLOWED_HOSTS || '').split(',').map(val
 const ALLOWED_ORIGINS = String(process.env.ALLOWED_ORIGINS || '').split(',').map(value => value.trim().toLowerCase().replace(/\/$/, '')).filter(Boolean);
 const WS_PATHS = new Set(String(process.env.WS_PATHS || '/ws').split(',').map(value => value.trim()).filter(Boolean));
 const DECLARATION_MS = Number(process.env.DECLARATION_MS || 20_000);
+const ROOM_EMPTY_TTL_MS = Number(process.env.ROOM_EMPTY_TTL_MS || 10 * 60_000);
+const ROOM_IDLE_TTL_MS = Number(process.env.ROOM_IDLE_TTL_MS || 2 * 60 * 60_000);
+const ROOM_SWEEP_INTERVAL_MS = Number(process.env.ROOM_SWEEP_INTERVAL_MS || 30_000);
 const rooms = new Map();
 
 const MIME_TYPES = {
@@ -160,13 +164,40 @@ function publicState(room, viewer) {
 }
 
 function broadcast(room) {
+  const hasConnectedHuman = room.game.players.some(player => !player.isBot && player.connected);
+  room.emptySince = hasConnectedHuman ? 0 : (room.emptySince || Date.now());
   room.game.players.forEach((player, index) => {
     if (!player.isBot) send(player.ws, publicState(room, index));
   });
 }
 
 function log(room, text) {
+  room.updatedAt = Date.now();
   room.log.push({ id: `${Date.now()}-${room.log.length}`, text, at: Date.now() });
+}
+
+function closeRoom(room, message = '房间已关闭。') {
+  if (!room || !rooms.has(room.id)) return;
+  clearDeclarationTimer(room);
+  if (room.botTimer) clearTimeout(room.botTimer);
+  room.game.players.forEach(player => {
+    if (!player.isBot) send(player.ws, { type: 'roomClosed', roomId: room.id, message });
+  });
+  rooms.delete(room.id);
+}
+
+function sweepExpiredRooms() {
+  const now = Date.now();
+  rooms.forEach(room => {
+    const reason = roomExpiryReason({
+      now,
+      emptySince: room.emptySince,
+      updatedAt: room.updatedAt,
+      emptyTtlMs: ROOM_EMPTY_TTL_MS,
+      idleTtlMs: ROOM_IDLE_TTL_MS
+    });
+    if (reason) closeRoom(room, reason === 'empty' ? '房间长时间无人在线，已自动解散。' : '房间长时间没有操作，已自动解散。');
+  });
 }
 
 function clearDeclarationTimer(room) {
@@ -261,7 +292,7 @@ function handle(ws, msg) {
     host.reconnectToken = crypto.randomBytes(18).toString('base64url');
     const game = createGame([host]);
     Object.assign(game.players[0], host);
-    const room = { id, hostIndex: 0, game, log: [], declarationTimer: null, botTimer: null };
+    const room = { id, hostIndex: 0, game, log: [], declarationTimer: null, botTimer: null, updatedAt: Date.now(), emptySince: 0 };
     rooms.set(id, room);
     attach(ws, room, 0);
     log(room, `${host.name} 创建了房间。`);
@@ -287,6 +318,7 @@ function handle(ws, msg) {
   }
   const room = rooms.get(ws.roomId);
   if (!room) return error(ws, '请先创建或加入房间');
+  room.updatedAt = Date.now();
   if (msg.type === 'fillBotsAndStart' || msg.type === 'startGame') {
     if (ws.playerIndex !== room.hostIndex) return error(ws, '只有房主可以开始游戏');
     if (room.game.phase !== 'lobby') return error(ws, '牌局已经开始');
@@ -331,6 +363,11 @@ function handle(ws, msg) {
     player.ws = null;
     send(ws, { type: 'leftRoom' });
     broadcast(room);
+    return;
+  }
+  if (msg.type === 'disbandRoom') {
+    if (ws.playerIndex !== room.hostIndex) return error(ws, '只有房主可以解散房间');
+    closeRoom(room, '房主已解散房间。');
   }
 }
 
@@ -353,6 +390,9 @@ const heartbeat = setInterval(() => wss.clients.forEach(ws => {
   ws.ping();
 }), 10_000);
 heartbeat.unref();
+
+const roomSweep = setInterval(sweepExpiredRooms, ROOM_SWEEP_INTERVAL_MS);
+roomSweep.unref();
 
 server.listen(PORT, HOST, () => console.log(`Gongzhu listening on http://${HOST}:${PORT}`));
 
