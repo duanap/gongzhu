@@ -15,7 +15,8 @@
 3. 在临时目录运行 `npm ci --omit=dev`；Vue 构建产物必须已包含在部署包中。
 4. 原子替换应用目录；旧目录移动到 archive 下带时间戳的目录。
 5. 执行 `pm2 startOrReload ecosystem.config.js --update-env`，确认单实例 fork、cwd 和 `127.0.0.1:3010`。
-6. 验证 `/healthz`、根页面和 `/ws`，再验证公网域名。
+6. 将 `deploy/nginx-site.conf` 安装到宝塔 Nginx vhost 目录，创建对应 well-known 空配置，执行 `nginx -t` 后重载。
+7. 验证 `/healthz`、根页面和 `/ws`，再验证公网域名。
 
 ## 回滚
 
