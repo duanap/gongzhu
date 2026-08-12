@@ -10,15 +10,21 @@ body,
 }
 
 body {
-  background: radial-gradient(circle at 50% 0, #315f38, #122414 62%, #0b1b11);
+  background:
+    linear-gradient(120deg, rgba(13, 33, 21, .92), rgba(25, 62, 37, .8)),
+    url('/table-bg-v1210.webp') center / cover fixed;
 }
 
 body.theme-night {
-  background: radial-gradient(circle at 50% 0, #233246, #101a2a 62%, #080d16);
+  background:
+    linear-gradient(120deg, rgba(6, 10, 18, .95), rgba(18, 28, 46, .88)),
+    url('/table-bg-v1210.webp') center / cover fixed;
 }
 
 body.theme-classic {
-  background: radial-gradient(circle at 50% 0, #667249, #344024 62%, #1c2513);
+  background:
+    linear-gradient(120deg, rgba(30, 42, 20, .9), rgba(74, 92, 48, .78)),
+    url('/table-bg-v1210.webp') center / cover fixed;
 }
 
 body.force-landscape {

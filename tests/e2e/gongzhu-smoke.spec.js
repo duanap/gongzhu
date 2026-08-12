@@ -32,12 +32,17 @@ test('entry screen remains usable on a mobile viewport', async ({ page }) => {
 
 test('Hearts table structure is preserved after creating a room', async ({ page }) => {
   await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 60_000 });
+  await expect(page.getByRole('button', { name: '规则' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '设置' })).toBeVisible();
   await page.getByRole('button', { name: '创建房间' }).click();
   await page.getByRole('button', { name: '确认创建' }).click();
   await expect(page.locator('.table-seat')).toHaveCount(4);
   await expect(page.locator('.table-status-panel')).toBeVisible();
   await expect(page.locator('.hand-panel')).toBeVisible();
-  await expect(page.locator('.legacy-game-stage, .mobile-game-stage')).toBeVisible();
+  const stage = page.locator('.legacy-game-stage, .mobile-game-stage');
+  await expect(stage).toBeVisible();
+  await expect(stage).toHaveCSS('background-image', /table-bg-v1210\.webp/);
+  await expect(page.locator('.gongzhu-declare-panel, .gongzhu-round-panel')).toHaveCount(0);
 });
 
 test('stale room cache is cleared after an in-memory room is gone', async ({ page }) => {

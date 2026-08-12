@@ -23,7 +23,17 @@ function updateNickname(nickname) {
   setNickname(game, nickname);
 }
 
-onMounted(() => gameSocket.connect());
+function applySavedDisplaySettings() {
+  const tableTone = localStorage.getItem('gongzhu-by-duanap-table-tone') || 'garden';
+  const reduceMotion = localStorage.getItem('gongzhu-by-duanap-reduce-motion') === '1';
+  document.body.dataset.tableTone = tableTone;
+  document.body.classList.toggle('gongzhu-reduce-motion', reduceMotion);
+}
+
+onMounted(() => {
+  applySavedDisplaySettings();
+  gameSocket.connect();
+});
 onBeforeUnmount(() => gameSocket.close());
 </script>
 

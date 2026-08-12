@@ -149,7 +149,7 @@
     overflow: hidden;
     border: 0;
     border-radius: 0;
-    background: radial-gradient(circle at 50% 43%, #65aa54 0, #418740 43%, #235b31 100%);
+    background: #6db45a url('/table-bg-v1210.webp') center / cover no-repeat;
     box-shadow: none;
     backdrop-filter: none;
   }
