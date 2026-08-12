@@ -19,7 +19,10 @@ docs-site/
 # Runtime data is persisted outside release artifacts.
 data/users.json
 data/ai-learning-state.json
-data/hearts.sqlite
-data/hearts.sqlite-shm
-data/hearts.sqlite-wal
+data/gongzhu.sqlite
+data/gongzhu.sqlite-shm
+data/gongzhu.sqlite-wal
 data/*.corrupt-*
+
+# Vite output is generated for release artifacts.
+public/assets/
