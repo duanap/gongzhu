@@ -1,0 +1,25 @@
+node_modules/
+.env
+.env.*
+!.env.example
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+.codex/
+.DS_Store
+
+playwright-report/
+test-results/
+blob-report/
+docs-site/
+*.tar.gz
+
+# Runtime data is persisted outside release artifacts.
+data/users.json
+data/ai-learning-state.json
+data/hearts.sqlite
+data/hearts.sqlite-shm
+data/hearts.sqlite-wal
+data/*.corrupt-*

@@ -1,0 +1,474 @@
+openapi: 3.1.0
+info:
+  title: Hearts by duanap Admin API
+  version: 1.0.0
+  description: 同源后台管理接口。除登录外均使用管理会话 Cookie；写操作同时要求 CSRF 和幂等键。
+servers:
+  - url: /api/admin/v1
+tags:
+  - name: Auth
+  - name: Overview
+  - name: Users
+  - name: Matches
+  - name: Rooms
+  - name: Operations
+paths:
+  /auth/login:
+    post:
+      tags: [Auth]
+      security: []
+      operationId: adminLogin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, password]
+              properties:
+                username: { type: string, maxLength: 128 }
+                password: { type: string }
+      responses:
+        '200':
+          description: 登录成功，并设置管理会话 Cookie。
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthEnvelope' }
+        '401': { $ref: '#/components/responses/Error' }
+        '429': { $ref: '#/components/responses/Error' }
+        '503': { $ref: '#/components/responses/Error' }
+  /auth/me:
+    get:
+      tags: [Auth]
+      operationId: getAdminSession
+      responses:
+        '200':
+          description: 当前管理员会话。
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthEnvelope' }
+        '401': { $ref: '#/components/responses/Error' }
+  /auth/logout:
+    post:
+      tags: [Auth]
+      operationId: adminLogout
+      parameters:
+        - $ref: '#/components/parameters/CsrfToken'
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+  /overview:
+    get:
+      tags: [Overview]
+      operationId: getAdminOverview
+      responses:
+        '200':
+          description: 用户、对局、实时房间和 AI 样本汇总。
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseEnvelope'
+                  - type: object
+                    properties:
+                      data: { $ref: '#/components/schemas/Overview' }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+  /users:
+    get:
+      tags: [Users]
+      operationId: listAdminUsers
+      parameters:
+        - $ref: '#/components/parameters/Query'
+        - $ref: '#/components/parameters/UserStatus'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: 分页玩家账号。
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PagedEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items: { $ref: '#/components/schemas/User' }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+  /users/{userId}:
+    get:
+      tags: [Users]
+      operationId: getAdminUser
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: 玩家账号详情及最近对局。
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseEnvelope'
+                  - type: object
+                    properties:
+                      data: { $ref: '#/components/schemas/User' }
+        '404': { $ref: '#/components/responses/Error' }
+  /users/{userId}/status:
+    patch:
+      tags: [Users]
+      operationId: updateAdminUserStatus
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+        - $ref: '#/components/parameters/CsrfToken'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status, reason, expectedVersion]
+              properties:
+                status: { type: string, enum: [active, suspended, banned] }
+                reason: { type: string, minLength: 1, maxLength: 500 }
+                expiresAt:
+                  oneOf:
+                    - { type: string, format: date-time }
+                    - { type: string, maxLength: 0 }
+                expectedVersion: { type: integer, minimum: 0 }
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '400': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /matches:
+    get:
+      tags: [Matches]
+      operationId: listAdminMatches
+      parameters:
+        - name: roomId
+          in: query
+          schema: { type: string }
+        - name: userId
+          in: query
+          schema: { type: string }
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: 分页牌局记录；管理接口包含内部玩家标识。
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PagedEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items: { $ref: '#/components/schemas/Match' }
+        '403': { $ref: '#/components/responses/Error' }
+  /matches/{matchId}:
+    get:
+      tags: [Matches]
+      operationId: getAdminMatch
+      parameters:
+        - name: matchId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: 单条牌局记录。
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseEnvelope'
+                  - type: object
+                    properties:
+                      data: { $ref: '#/components/schemas/Match' }
+        '404': { $ref: '#/components/responses/Error' }
+  /rooms:
+    get:
+      tags: [Rooms]
+      operationId: listAdminRooms
+      parameters:
+        - $ref: '#/components/parameters/Query'
+        - name: status
+          in: query
+          description: 牌局阶段，例如 lobby、pass、play、roundEnd、gameEnd。
+          schema: { type: string }
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: 安全投影后的实时房间列表，不包含手牌和游客标识。
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PagedEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items: { $ref: '#/components/schemas/Room' }
+        '403': { $ref: '#/components/responses/Error' }
+  /rooms/{roomId}:
+    get:
+      tags: [Rooms]
+      operationId: getAdminRoom
+      parameters:
+        - $ref: '#/components/parameters/RoomId'
+        - name: includeSensitive
+          in: query
+          description: 仅 super_admin 可设为 1，以包含游客标识和手牌。
+          schema: { type: integer, enum: [0, 1], default: 0 }
+      responses:
+        '200':
+          description: 实时房间详情。
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseEnvelope'
+                  - type: object
+                    properties:
+                      data: { $ref: '#/components/schemas/Room' }
+        '404': { $ref: '#/components/responses/Error' }
+  /rooms/{roomId}/disband:
+    post:
+      tags: [Rooms]
+      operationId: disbandAdminRoom
+      parameters:
+        - $ref: '#/components/parameters/RoomId'
+        - $ref: '#/components/parameters/CsrfToken'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason: { type: string, minLength: 1, maxLength: 500 }
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+  /ai/learning:
+    get:
+      tags: [Operations]
+      operationId: getAdminAiLearning
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '403': { $ref: '#/components/responses/Error' }
+  /audit-logs:
+    get:
+      tags: [Operations]
+      operationId: listAdminAuditLogs
+      parameters:
+        - name: action
+          in: query
+          schema: { type: string }
+        - name: adminId
+          in: query
+          schema: { type: string }
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: 分页审计条目。
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PagedEnvelope' }
+        '403': { $ref: '#/components/responses/Error' }
+  /events:
+    get:
+      tags: [Operations]
+      operationId: streamAdminSnapshots
+      responses:
+        '200':
+          description: 每 10 秒发送 overview 和 rooms 快照的 Server-Sent Events 流。
+          content:
+            text/event-stream:
+              schema: { type: string }
+components:
+  securitySchemes:
+    adminSession:
+      type: apiKey
+      in: cookie
+      name: hearts_admin_sid
+  parameters:
+    CsrfToken:
+      name: X-CSRF-Token
+      in: header
+      required: true
+      schema: { type: string }
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: 每个管理员全局唯一，最大 128 字符。
+      schema: { type: string, minLength: 1, maxLength: 128 }
+    Query:
+      name: query
+      in: query
+      schema: { type: string }
+    UserStatus:
+      name: status
+      in: query
+      schema: { type: string, enum: [active, suspended, banned] }
+    Limit:
+      name: limit
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+    Cursor:
+      name: cursor
+      in: query
+      schema: { type: string }
+    UserId:
+      name: userId
+      in: path
+      required: true
+      schema: { type: string }
+    RoomId:
+      name: roomId
+      in: path
+      required: true
+      schema: { type: string, pattern: '^[0-9]{4}$' }
+  schemas:
+    BaseEnvelope:
+      type: object
+      required: [data, requestId]
+      properties:
+        data: {}
+        requestId: { type: string }
+    PagedEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/BaseEnvelope'
+        - type: object
+          properties:
+            meta:
+              type: object
+              required: [limit, nextCursor]
+              properties:
+                limit: { type: integer }
+                nextCursor: { type: string }
+                total: { type: integer }
+    AuthEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/BaseEnvelope'
+        - type: object
+          properties:
+            data:
+              type: object
+              required: [admin, csrfToken, expiresAt]
+              properties:
+                admin: { $ref: '#/components/schemas/Admin' }
+                csrfToken: { type: string }
+                expiresAt: { type: string, format: date-time }
+    Admin:
+      type: object
+      required: [adminId, username, role, active]
+      properties:
+        adminId: { type: string, format: uuid }
+        username: { type: string }
+        role: { type: string, enum: [super_admin, operator, viewer] }
+        active: { type: boolean }
+        createdAt: { type: string, format: date-time }
+        lastLoginAt: { type: string }
+    User:
+      type: object
+      required: [userId, nickname, status, version]
+      properties:
+        userId: { type: string }
+        provider: { type: string }
+        nickname: { type: string }
+        avatarUrl: { type: string }
+        status: { type: string, enum: [active, suspended, banned] }
+        statusReason: { type: string }
+        statusExpiresAt: { type: string }
+        version: { type: integer }
+        createdAt: { type: string }
+        lastLoginAt: { type: string }
+        lastPlayedAt: { type: string }
+        stats: { type: object, additionalProperties: true }
+    Overview:
+      type: object
+      properties:
+        users: { type: integer }
+        guests: { type: integer }
+        matches: { type: integer }
+        bannedUsers: { type: integer }
+        suspendedUsers: { type: integer }
+        liveRooms: { type: integer }
+        livePlayers: { type: integer }
+        connectedHumans: { type: integer }
+        aiSamples: { type: integer }
+    Match:
+      type: object
+      properties:
+        matchId: { type: string }
+        roomId: { type: string }
+        roundNo: { type: integer }
+        playedAt: { type: string }
+        participants:
+          type: array
+          items:
+            type: object
+            properties:
+              userId: { type: string }
+              guestId: { type: string }
+              name: { type: string }
+              score: { type: number }
+              winner: { type: boolean }
+              isBot: { type: boolean }
+    Room:
+      type: object
+      properties:
+        roomId: { type: string }
+        phase: { type: string }
+        roundNo: { type: integer }
+        trickNo: { type: integer }
+        playerCount: { type: integer }
+        humanCount: { type: integer }
+        connectedHumanCount: { type: integer }
+        botCount: { type: integer }
+        createdAt: { type: string }
+        updatedAt: { type: string }
+        players:
+          type: array
+          items: { type: object, additionalProperties: true }
+    ErrorEnvelope:
+      type: object
+      required: [error, requestId]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code: { type: string }
+            message: { type: string }
+            details: {}
+        requestId: { type: string }
+  responses:
+    Success:
+      description: 请求成功。
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/BaseEnvelope' }
+    Error:
+      description: 标准错误响应。
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorEnvelope' }
+security:
+  - adminSession: []

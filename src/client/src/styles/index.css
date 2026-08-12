@@ -1,0 +1,24 @@
+/*
+ * Vue CSS entry point.
+ *
+ * Keep imports explicit and ordered: the current UI still relies on source-order
+ * parity while legacy selectors are moved into focused modules.
+ */
+@import './tokens.css';
+@import './foundation/base.css';
+@import './primitives/table-elements.css';
+@import './features/interactions.css';
+@import './features/trick-events.css';
+@import './motion/table-effects.css';
+@import './motion/canonical-keyframes.css';
+@import './layout/desktop-table.css';
+@import './features/hand.css';
+@import './primitives/modals-tools.css';
+@import './features/seats.css';
+@import './primitives/cards.css';
+@import './features/results-history.css';
+@import './layout/mobile-fallback.css';
+@import './layout/responsive.css';
+@import './compat/desktop-parity.css';
+@import './layout/mobile-table.css';
+@import './compat/mobile-parity.css';

@@ -1,0 +1,77 @@
+{
+  "title": "Hearts by duanap · 游戏设计中心",
+  "url": "https://docs.hearts.duanap.cn",
+  "src": "docs/public",
+  "out": "docs-site",
+  "base": "/",
+  "layout": {
+    "spa": true,
+    "sidebar": {
+      "collapsible": true
+    }
+  },
+  "navigation": [
+    {
+      "title": "首页",
+      "path": "/"
+    },
+    {
+      "title": "核心玩法",
+      "collapsible": false,
+      "children": [
+        {
+          "title": "一局牌如何流动",
+          "path": "/core/game-loop/"
+        }
+      ]
+    },
+    {
+      "title": "联机房间",
+      "collapsible": false,
+      "children": [
+        {
+          "title": "房间、重连与接管",
+          "path": "/multiplayer/rooms-reconnect-and-takeover/"
+        }
+      ]
+    },
+    {
+      "title": "AI 设计",
+      "collapsible": false,
+      "children": [
+        {
+          "title": "AI 策略与学习",
+          "path": "/ai/strategy-and-learning/"
+        }
+      ]
+    },
+    {
+      "title": "体验设计",
+      "collapsible": false,
+      "children": [
+        {
+          "title": "互动、动画与声音",
+          "path": "/experience/interaction-effects-and-sound/"
+        },
+        {
+          "title": "移动横屏与设置",
+          "path": "/experience/mobile-landscape-and-settings/"
+        }
+      ]
+    },
+    {
+      "title": "设计演进",
+      "path": "/evolution/design-log/"
+    }
+  ],
+  "plugins": {
+    "search": {},
+    "seo": {},
+    "sitemap": {},
+    "git": {},
+    "llms": {
+      "fullContext": true
+    },
+    "mermaid": {}
+  }
+}
