@@ -93,7 +93,7 @@ onBeforeUnmount(() => {
         <div><small>规则</small><strong>{{ game.ruleSet }}</strong></div>
         <div><small>第几副</small><strong>{{ game.roundNo || '等待' }}</strong></div>
         <button v-if="game.phase === 'lobby' && game.isHost" class="primary" @click="socket.fillBotsAndStart">AI 补位并开始</button>
-        <button class="ghost" @click="socket.leaveRoom">退出</button>
+        <button class="ghost" @click="game.isHost ? socket.disbandRoom() : socket.leaveRoom()">{{ game.isHost ? '解散' : '退出' }}</button>
       </section>
 
       <section class="score-grid">
