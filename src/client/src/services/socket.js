@@ -5,6 +5,7 @@ import {
   markRoomCreated,
   setSocketError
 } from '../stores/gameState';
+import { readGamePace } from './preferences';
 
 export function createGameSocket(state) {
   let socket = null;
@@ -139,7 +140,7 @@ export function createGameSocket(state) {
     connect,
     reconnect,
     send,
-    createRoom: () => send({ type: 'createRoom' }),
+    createRoom: () => send({ type: 'createRoom', pace: readGamePace() }),
     joinRoom: roomId => send({ type: 'joinRoom', roomId }),
     startGame: () => send({ type: 'startGame' }),
     fillBotsAndStart: () => send({ type: 'fillBotsAndStart' }),
@@ -147,6 +148,7 @@ export function createGameSocket(state) {
     disbandRoom: () => send({ type: 'disbandRoom' }),
     declareCards: cardIds => send({ type: 'declareCards', cardIds }),
     playCard: cardId => send({ type: 'playCard', cardId }),
+    setPace: pace => send({ type: 'setPace', pace }),
     startNextRound: () => send({ type: 'startNextRound' }),
     restartGame: () => send({ type: 'restartGame' })
   };

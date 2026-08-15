@@ -51,6 +51,7 @@ onBeforeUnmount(() => gameSocket.close());
     @clear-error="game.lastError = ''"
     @declare-cards="gameSocket.declareCards"
     @play-card="gameSocket.playCard"
+    @set-pace="gameSocket.setPace"
     @start-next-round="gameSocket.startNextRound"
     @restart-game="gameSocket.restartGame"
   />

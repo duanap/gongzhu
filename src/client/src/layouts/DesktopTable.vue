@@ -18,7 +18,7 @@ import { useFullscreen } from '../composables/useFullscreen';
 import { APP_VERSION } from '../releaseInfo';
 
 const props = defineProps({ game: { type: Object, required: true }, status: { type: String, default: '' } });
-defineEmits(['create-room', 'join-room', 'fill-bots', 'leave-room', 'disband-room', 'update-nickname', 'clear-error', 'declare-cards', 'play-card', 'start-next-round', 'restart-game']);
+defineEmits(['create-room', 'join-room', 'fill-bots', 'leave-room', 'disband-room', 'update-nickname', 'clear-error', 'declare-cards', 'play-card', 'set-pace', 'start-next-round', 'restart-game']);
 const roomDismissed = ref(false);
 const roomForcedOpen = ref(false);
 const resultOpen = ref(false);
@@ -60,7 +60,7 @@ useDialogFocus(roomDialogRef, () => showRoomModal.value, closeRoom);
         <OpponentHand :count="game.viewPlayers[2]?.handCount" position="north" />
         <OpponentHand :count="game.viewPlayers[1]?.handCount" position="west" />
         <OpponentHand :count="game.viewPlayers[3]?.handCount" position="east" />
-        <div class="center-stack"><TableCenter :game="game" @open-room="openRoom" @open-result="resultOpen = true" @open-round-summary="activePanel = 'round'" @start-next-round="$emit('start-next-round')" /><TrickArea :trick="game.trickView" :players="game.viewPlayers" /></div>
+        <div class="center-stack"><TableCenter :game="game" @open-room="openRoom" @open-result="resultOpen = true" @open-round-summary="activePanel = 'round'" @start-next-round="$emit('start-next-round')" /><TrickArea :trick="game.trickView" :players="game.viewPlayers" :settling="game.settlingTrick" :winner-player="game.trickWinnerViewPlayer" /></div>
         <GameInfoPanel class="desktop-info-panel" :game="game" />
       </section>
 
@@ -74,7 +74,7 @@ useDialogFocus(roomDialogRef, () => showRoomModal.value, closeRoom);
     </section>
 
     <LegacyModal v-if="activePanel === 'rules'" title="拱猪规则" subtitle="gongzhu-v1 · 亮猪、亮羊、亮红、亮变" variant="rules" @close="activePanel = ''"><RulesPanel /></LegacyModal>
-    <LegacyModal v-if="activePanel === 'settings'" title="设置" subtitle="调整牌桌显示并打开常用工具。" variant="settings" :show-bottom-close="false" @close="activePanel = ''"><SettingsPanel @open-panel="activePanel = $event" /></LegacyModal>
+    <LegacyModal v-if="activePanel === 'settings'" title="设置" subtitle="调整牌桌显示并打开常用工具。" variant="settings" :show-bottom-close="false" @close="activePanel = ''"><SettingsPanel :game="game" @open-panel="activePanel = $event" @set-pace="$emit('set-pace', $event)" /></LegacyModal>
     <LegacyModal v-if="activePanel === 'log'" title="出牌日志" subtitle="最新事件显示在最上方。" eyebrow="MATCH HISTORY" variant="wide" @close="activePanel = ''"><EventLogPanel :game="game" /></LegacyModal>
     <LegacyModal v-if="activePanel === 'round'" title="本副结算" subtitle="按座位查看本副原始分与累计分。" variant="wide" @close="activePanel = ''"><RoundSummaryPanel :game="game" /></LegacyModal>
   </main>
