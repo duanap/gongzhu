@@ -17,7 +17,7 @@ import { useFullscreen } from '../composables/useFullscreen';
 import { APP_VERSION } from '../releaseInfo';
 
 const props = defineProps({ game: { type: Object, required: true }, status: { type: String, default: '' } });
-defineEmits(['create-room', 'join-room', 'fill-bots', 'leave-room', 'disband-room', 'update-nickname', 'clear-error', 'declare-cards', 'play-card', 'start-next-round', 'restart-game']);
+defineEmits(['create-room', 'join-room', 'fill-bots', 'leave-room', 'disband-room', 'update-nickname', 'clear-error', 'declare-cards', 'play-card', 'set-pace', 'start-next-round', 'restart-game']);
 const activePanel = ref('');
 const resultOpen = ref(false);
 const dialogRef = ref(null);
@@ -44,7 +44,7 @@ useDialogFocus(dialogRef, () => activePanel.value, () => { activePanel.value = '
       <div class="mobile-side-seats"><Seat class="seat-west" :player="game.viewPlayers[1]" label="左家" :current="game.phase === 'play' && game.currentViewPlayer === 1" /><Seat class="seat-east" :player="game.viewPlayers[3]" label="右家" :current="game.phase === 'play' && game.currentViewPlayer === 3" /></div>
       <OpponentHand :count="game.viewPlayers[2]?.handCount" position="north" /><OpponentHand :count="game.viewPlayers[1]?.handCount" position="west" /><OpponentHand :count="game.viewPlayers[3]?.handCount" position="east" />
       <TableCenter :game="game" @open-room="activePanel = 'room'" @open-result="resultOpen = true" @open-round-summary="activePanel = 'round'" @start-next-round="$emit('start-next-round')" />
-      <TrickArea :trick="game.trickView" :players="game.viewPlayers" />
+      <TrickArea :trick="game.trickView" :players="game.viewPlayers" :settling="game.settlingTrick" :winner-player="game.trickWinnerViewPlayer" />
       <GameInfoPanel class="mobile-score-panel" :game="game" />
       <Seat class="seat-south" :player="game.viewPlayers[0]" label="你" active :current="game.phase === 'play' && game.currentViewPlayer === 0" />
     </section>
@@ -56,7 +56,7 @@ useDialogFocus(dialogRef, () => activePanel.value, () => { activePanel.value = '
       <div class="mobile-sheet-body">
         <RoomPanel v-if="activePanel === 'room'" :game="game" @create-room="$emit('create-room')" @join-room="$emit('join-room', $event)" @fill-bots="$emit('fill-bots')" @leave-room="$emit('leave-room')" @disband-room="$emit('disband-room')" @update-nickname="$emit('update-nickname', $event)" @clear-error="$emit('clear-error')" @close-panel="activePanel = ''" />
         <RulesPanel v-if="activePanel === 'rules'" />
-        <SettingsPanel v-if="activePanel === 'settings'" @open-panel="activePanel = $event" />
+        <SettingsPanel v-if="activePanel === 'settings'" :game="game" @open-panel="activePanel = $event" @set-pace="$emit('set-pace', $event)" />
         <EventLogPanel v-if="activePanel === 'log'" :game="game" />
         <RoundSummaryPanel v-if="activePanel === 'round'" :game="game" />
       </div>

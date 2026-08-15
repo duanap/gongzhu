@@ -24,10 +24,51 @@ test('host can complete a full round with three bots', async ({ page }) => {
   await expect(page.getByText(/本副结算完成|最高分并列/)).toBeVisible({ timeout: 10000 });
 });
 
-test('entry screen remains usable on a mobile viewport', async ({ page }) => {
+test('entry screen remains upright and usable in mobile portrait', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile', 'mobile portrait regression');
   await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 60_000 });
   await expect(page.getByRole('button', { name: '创建房间' })).toBeVisible();
   await expect(page.locator('body')).not.toHaveCSS('overflow-x', 'scroll');
+  await expect(page.locator('.mobile-shell')).toHaveCSS('transform', 'none');
+  const viewport = page.viewportSize();
+  const shell = await page.locator('.mobile-shell').boundingBox();
+  expect(shell.width).toBeGreaterThanOrEqual(viewport.width - 1);
+  expect(shell.height).toBeGreaterThanOrEqual(viewport.height - 1);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+});
+
+test('mobile table also fits a physical landscape viewport without CSS rotation', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile', 'physical mobile landscape regression');
+  await page.setViewportSize({ width: 844, height: 390 });
+  await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 60_000 });
+  await expect(page.getByRole('button', { name: '创建房间' })).toBeVisible();
+  await expect(page.locator('.mobile-shell')).toHaveCSS('transform', 'none');
+  const shell = await page.locator('.mobile-shell').boundingBox();
+  expect(shell.width).toBeGreaterThanOrEqual(843);
+  expect(shell.height).toBeGreaterThanOrEqual(389);
+});
+
+test('narrow 360px portrait keeps the table inside the physical viewport', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile', 'narrow mobile portrait regression');
+  await page.setViewportSize({ width: 360, height: 800 });
+  await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 60_000 });
+  await expect(page.locator('.mobile-shell')).toHaveCSS('transform', 'none');
+  await expect(page.getByRole('button', { name: '创建房间' })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+});
+
+test('host can change the room-wide pacing setting', async ({ page }) => {
+  await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 60_000 });
+  await expect(page.locator('.service-state.online, .gongzhu-online-state.online, .status-line').first()).toContainText(/已连接/, { timeout: 20_000 });
+  await page.getByRole('button', { name: '创建房间' }).click();
+  await page.getByRole('button', { name: '确认创建' }).click();
+  await page.locator('.room-close-bottom').click();
+  await page.getByRole('button', { name: '设置', exact: true }).click();
+  const paceGroup = page.getByRole('group', { name: '牌局节奏' });
+  await expect(paceGroup.getByRole('button', { name: '标准' })).toHaveClass(/active/);
+  await paceGroup.getByRole('button', { name: '偏慢' }).click();
+  await expect(paceGroup.getByRole('button', { name: '偏慢' })).toHaveClass(/active/);
+  await expect(page.getByText(/约 1\.7–2\.15 秒出牌/)).toBeVisible();
 });
 
 test('Hearts table structure is preserved after creating a room', async ({ page }) => {

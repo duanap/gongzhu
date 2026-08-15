@@ -21,6 +21,8 @@ function createGame(players = []) {
     roundNo: 0,
     trickNo: 0,
     trick: [],
+    settlingTrick: false,
+    trickWinnerPlayer: null,
     ledSuits: [],
     currentPlayer: 0,
     declarations: [],
@@ -54,6 +56,8 @@ function dealRound(game, deck) {
   game.phase = 'declare';
   game.trickNo = 0;
   game.trick = [];
+  game.settlingTrick = false;
+  game.trickWinnerPlayer = null;
   game.ledSuits = [];
   game.declarations = [];
   game.declarationChoices = [null, null, null, null];
@@ -117,8 +121,34 @@ function finishRound(game) {
   game.phase = settlement.gameOver ? 'gameEnd' : 'roundEnd';
 }
 
-function playCard(game, playerIndex, cardId) {
+function trickWinner(game) {
+  const leadSuit = game.trick[0].card.suit;
+  return game.trick
+    .filter(play => play.card.suit === leadSuit)
+    .sort((left, right) => right.card.rank - left.card.rank)[0];
+}
+
+function resolveTrick(game) {
+  if (!game.settlingTrick || game.trick.length !== 4) return '当前没有等待结算的牌墩';
+  const leadSuit = game.trick[0].card.suit;
+  const winnerPlay = trickWinner(game);
+  const trickCards = game.trick.map(play => play.card);
+  game.players[winnerPlay.player].taken.push(...trickCards);
+  if (trickCards.some(item => item.id === 'S12')) game.previousPigTaker = winnerPlay.player;
+  if (!game.ledSuits.includes(leadSuit)) game.ledSuits.push(leadSuit);
+  game.lastTrick = { winnerPlayer: winnerPlay.player, leadSuit, cards: game.trick.map(play => ({ ...play })) };
+  game.trick = [];
+  game.settlingTrick = false;
+  game.trickWinnerPlayer = null;
+  game.trickNo += 1;
+  game.currentPlayer = winnerPlay.player;
+  if (game.players.every(item => item.hand.length === 0)) finishRound(game);
+  return null;
+}
+
+function playCard(game, playerIndex, cardId, options = {}) {
   if (game.phase !== 'play') return '现在不是出牌阶段';
+  if (game.settlingTrick) return '本墩正在结算';
   if (game.currentPlayer !== playerIndex) return '还没轮到你出牌';
   const player = game.players[playerIndex];
   const card = player?.hand.find(item => item.id === cardId);
@@ -140,20 +170,10 @@ function playCard(game, playerIndex, cardId) {
     return null;
   }
 
-  const leadSuit = game.trick[0].card.suit;
-  const winnerPlay = game.trick
-    .filter(play => play.card.suit === leadSuit)
-    .sort((left, right) => right.card.rank - left.card.rank)[0];
-  const trickCards = game.trick.map(play => play.card);
-  game.players[winnerPlay.player].taken.push(...trickCards);
-  if (trickCards.some(item => item.id === 'S12')) game.previousPigTaker = winnerPlay.player;
-  if (!game.ledSuits.includes(leadSuit)) game.ledSuits.push(leadSuit);
-  game.lastTrick = { winnerPlayer: winnerPlay.player, leadSuit, cards: game.trick.map(play => ({ ...play })) };
-  game.trick = [];
-  game.trickNo += 1;
-  game.currentPlayer = winnerPlay.player;
-  if (game.players.every(item => item.hand.length === 0)) finishRound(game);
-  return null;
+  game.settlingTrick = true;
+  game.trickWinnerPlayer = trickWinner(game).player;
+  game.currentPlayer = game.trickWinnerPlayer;
+  return options.deferTrickResolution ? null : resolveTrick(game);
 }
 
 module.exports = {
@@ -161,5 +181,6 @@ module.exports = {
   createGame,
   dealRound,
   playCard,
+  resolveTrick,
   submitDeclaration
 };

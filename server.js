@@ -5,8 +5,9 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const WebSocket = require('ws');
-const { createGame, dealRound, submitDeclaration, playCard } = require('./src/server/games/gongzhu/engine');
+const { createGame, dealRound, submitDeclaration, playCard, resolveTrick } = require('./src/server/games/gongzhu/engine');
 const { legalCards } = require('./src/server/games/gongzhu/rules');
+const { normalizePace, pacingFor } = require('./src/server/gamePacing');
 const { roomExpiryReason } = require('./src/server/roomLifecycle');
 const { version: APP_VERSION } = require('./package.json');
 
@@ -20,6 +21,7 @@ const DECLARATION_MS = Number(process.env.DECLARATION_MS || 20_000);
 const ROOM_EMPTY_TTL_MS = Number(process.env.ROOM_EMPTY_TTL_MS || 10 * 60_000);
 const ROOM_IDLE_TTL_MS = Number(process.env.ROOM_IDLE_TTL_MS || 2 * 60 * 60_000);
 const ROOM_SWEEP_INTERVAL_MS = Number(process.env.ROOM_SWEEP_INTERVAL_MS || 30_000);
+const GAME_PACE_SCALE = Number(process.env.GAME_PACE_SCALE || 1);
 const rooms = new Map();
 
 const MIME_TYPES = {
@@ -136,7 +138,10 @@ function publicState(room, viewer) {
     trick: game.trick,
     ledSuits: game.ledSuits,
     currentPlayer: game.currentPlayer,
-    legalCardIds: game.phase === 'play' && viewer === game.currentPlayer
+    settlingTrick: game.settlingTrick,
+    trickWinnerPlayer: game.trickWinnerPlayer,
+    pace: room.pace,
+    legalCardIds: game.phase === 'play' && !game.settlingTrick && viewer === game.currentPlayer
       ? legalCards({ hand: self.hand, trick: game.trick, trickNo: game.trickNo, ledSuits: game.ledSuits, declarations: game.declarations.map(item => item.cardId), forceClubTwo: game.roundNo === 1 }).map(card => card.id)
       : [],
     declarationDeadline: game.phase === 'declare' ? game.declarationDeadline : 0,
@@ -180,6 +185,7 @@ function closeRoom(room, message = '房间已关闭。') {
   if (!room || !rooms.has(room.id)) return;
   clearDeclarationTimer(room);
   if (room.botTimer) clearTimeout(room.botTimer);
+  if (room.trickTimer) clearTimeout(room.trickTimer);
   room.game.players.forEach(player => {
     if (!player.isBot) send(player.ws, { type: 'roomClosed', roomId: room.id, message });
   });
@@ -220,6 +226,10 @@ function startDeclarationTimer(room) {
 }
 
 function startRound(room) {
+  if (room.botTimer) clearTimeout(room.botTimer);
+  if (room.trickTimer) clearTimeout(room.trickTimer);
+  room.botTimer = null;
+  room.trickTimer = null;
   dealRound(room.game, makeDeck());
   room.game.players.forEach((player, index) => {
     if (player.isBot) {
@@ -247,19 +257,39 @@ function botCard(game, index) {
 }
 
 function scheduleBots(room) {
-  if (room.botTimer) return;
-  const tick = () => {
+  if (room.botTimer || room.trickTimer || room.game.settlingTrick) return;
+  const current = room.game.players[room.game.currentPlayer];
+  if (room.game.phase !== 'play' || (!current?.isBot && current?.connected)) return;
+  const { aiMs } = pacingFor(room.pace, { scale: GAME_PACE_SCALE });
+  room.botTimer = setTimeout(() => {
     room.botTimer = null;
-    if (room.game.phase !== 'play') return;
-    const current = room.game.players[room.game.currentPlayer];
-    if (!current?.isBot && current?.connected) return;
+    if (room.game.phase !== 'play' || room.game.settlingTrick) return;
+    const activePlayer = room.game.players[room.game.currentPlayer];
+    if (!activePlayer?.isBot && activePlayer?.connected) return;
     const chosen = botCard(room.game, room.game.currentPlayer);
     if (!chosen) return;
-    playCard(room.game, room.game.currentPlayer, chosen.id);
+    playRoomCard(room, room.game.currentPlayer, chosen.id);
+  }, aiMs);
+}
+
+function scheduleTrickResolution(room) {
+  if (room.trickTimer || !room.game.settlingTrick) return;
+  const { trickMs } = pacingFor(room.pace, { scale: GAME_PACE_SCALE });
+  room.trickTimer = setTimeout(() => {
+    room.trickTimer = null;
+    if (resolveTrick(room.game)) return;
     broadcast(room);
-    room.botTimer = setTimeout(tick, 260);
-  };
-  room.botTimer = setTimeout(tick, 260);
+    scheduleBots(room);
+  }, trickMs);
+}
+
+function playRoomCard(room, playerIndex, cardId) {
+  const playError = playCard(room.game, playerIndex, cardId, { deferTrickResolution: true });
+  if (playError) return playError;
+  broadcast(room);
+  if (room.game.settlingTrick) scheduleTrickResolution(room);
+  else scheduleBots(room);
+  return null;
 }
 
 function attach(ws, room, index) {
@@ -304,7 +334,18 @@ function handle(ws, msg) {
     host.reconnectToken = crypto.randomBytes(18).toString('base64url');
     const game = createGame([host]);
     Object.assign(game.players[0], host);
-    const room = { id, hostIndex: 0, game, log: [], declarationTimer: null, botTimer: null, updatedAt: Date.now(), emptySince: 0 };
+    const room = {
+      id,
+      hostIndex: 0,
+      game,
+      pace: normalizePace(msg.pace),
+      log: [],
+      declarationTimer: null,
+      botTimer: null,
+      trickTimer: null,
+      updatedAt: Date.now(),
+      emptySince: 0
+    };
     rooms.set(id, room);
     attach(ws, room, 0);
     log(room, `${host.name} 创建了房间。`);
@@ -331,6 +372,20 @@ function handle(ws, msg) {
   const room = rooms.get(ws.roomId);
   if (!room) return error(ws, '请先创建或加入房间');
   room.updatedAt = Date.now();
+  if (msg.type === 'setPace') {
+    if (ws.playerIndex !== room.hostIndex) return error(ws, '只有房主可以调整牌局节奏');
+    const pace = normalizePace(msg.pace);
+    if (pace !== msg.pace) return error(ws, '牌局节奏设置无效');
+    room.pace = pace;
+    if (room.botTimer) {
+      clearTimeout(room.botTimer);
+      room.botTimer = null;
+      scheduleBots(room);
+    }
+    log(room, `房主将牌局节奏调整为${({ fast: '偏快', standard: '标准', relaxed: '偏慢' })[pace]}。`);
+    broadcast(room);
+    return;
+  }
   if (msg.type === 'fillBotsAndStart' || msg.type === 'startGame') {
     if (ws.playerIndex !== room.hostIndex) return error(ws, '只有房主可以开始游戏');
     if (room.game.phase !== 'lobby') return error(ws, '牌局已经开始');
@@ -348,10 +403,8 @@ function handle(ws, msg) {
     return;
   }
   if (msg.type === 'playCard') {
-    const playError = playCard(room.game, ws.playerIndex, String(msg.cardId || ''));
+    const playError = playRoomCard(room, ws.playerIndex, String(msg.cardId || ''));
     if (playError) return error(ws, playError);
-    broadcast(room);
-    scheduleBots(room);
     return;
   }
   if (msg.type === 'startNextRound') {

@@ -20,7 +20,7 @@ module.exports = defineConfig({
     trace: 'retain-on-failure'
   },
   webServer: process.env.E2E_BASE_URL ? undefined : {
-    command: `DECLARATION_MS=3000 HOST=127.0.0.1 PORT=${port} node server.js`,
+    command: `DECLARATION_MS=3000 GAME_PACE_SCALE=0.05 HOST=127.0.0.1 PORT=${port} node server.js`,
     url: `${baseURL}/healthz`,
     reuseExistingServer: false,
     timeout: 30000

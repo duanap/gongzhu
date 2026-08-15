@@ -1,6 +1,6 @@
 {
   "name": "gongzhu-by-duanap",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "拱猪联机版：gongzhu-v1 规则、秘密亮牌、AI 补位与断线重连",
   "main": "server.js",
   "engines": {

@@ -6,7 +6,8 @@ const {
   createGame,
   dealRound,
   submitDeclaration,
-  playCard
+  playCard,
+  resolveTrick
 } = require('./engine');
 
 function card(id) {
@@ -72,4 +73,31 @@ test('winner collects a trick and the pig taker opens the next round', () => {
   dealRound(game, orderedDeck());
   [0, 1, 2, 3].forEach(index => submitDeclaration(game, index, []));
   assert.equal(game.currentPlayer, 0);
+});
+
+test('deferred trick resolution keeps four cards visible until the server settles', () => {
+  const game = createGame(['A', 'B', 'C', 'D'].map(name => ({ name })));
+  game.phase = 'play';
+  game.roundNo = 2;
+  game.currentPlayer = 0;
+  game.players[0].hand = [card('H10'), card('C3')];
+  game.players[1].hand = [card('H11'), card('C4')];
+  game.players[2].hand = [card('H12'), card('C5')];
+  game.players[3].hand = [card('H13'), card('C6')];
+
+  assert.equal(playCard(game, 0, 'H10', { deferTrickResolution: true }), null);
+  assert.equal(playCard(game, 1, 'H11', { deferTrickResolution: true }), null);
+  assert.equal(playCard(game, 2, 'H12', { deferTrickResolution: true }), null);
+  assert.equal(playCard(game, 3, 'H13', { deferTrickResolution: true }), null);
+  assert.equal(game.settlingTrick, true);
+  assert.equal(game.trickWinnerPlayer, 3);
+  assert.equal(game.trick.length, 4);
+  assert.equal(playCard(game, 3, 'C6'), '本墩正在结算');
+
+  assert.equal(resolveTrick(game), null);
+  assert.equal(game.settlingTrick, false);
+  assert.equal(game.trick.length, 0);
+  assert.equal(game.trickNo, 1);
+  assert.equal(game.currentPlayer, 3);
+  assert.equal(game.players[3].taken.length, 4);
 });
