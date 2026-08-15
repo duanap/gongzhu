@@ -1,6 +1,6 @@
 {
   "name": "gongzhu-by-duanap",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "拱猪联机版：gongzhu-v1 规则、秘密亮牌、AI 补位与断线重连",
   "main": "server.js",
   "engines": {
@@ -18,13 +18,13 @@
     "reload:prod": "pm2 restart gongzhu --update-env"
   },
   "dependencies": {
-    "vue": "^3.5.39",
     "ws": "^8.18.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.61.1",
     "@vitejs/plugin-vue": "^6.0.7",
-    "vite": "^8.1.2"
+    "vite": "^8.1.2",
+    "vue": "^3.5.39"
   },
   "keywords": [],
   "author": "",
